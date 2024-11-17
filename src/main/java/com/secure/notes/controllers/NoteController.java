@@ -28,7 +28,9 @@ public class NoteController {
     public List<Note> getUserNotes(@AuthenticationPrincipal UserDetails userDetails) {
         String username = userDetails.getUsername();
         System.out.println("USER DETAILS: " + username);
-        return noteService.getNotesForUser(username);
+        List<Note> notes = noteService.getNotesForUser(username);
+        System.out.println("notes: " + notes);
+        return notes;
     }
 
     @PutMapping("/{noteId}")

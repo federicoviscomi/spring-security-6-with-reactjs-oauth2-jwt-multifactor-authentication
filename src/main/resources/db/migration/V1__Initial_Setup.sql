@@ -13,3 +13,8 @@ create table authorities(
 );
 
 create unique index ix_auth_username on authorities(username, authority);
+
+create table roles(
+    role_id integer primary key,
+    role_name varchar(20)
+);

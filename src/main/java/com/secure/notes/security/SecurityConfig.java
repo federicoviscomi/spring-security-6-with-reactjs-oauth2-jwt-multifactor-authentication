@@ -2,10 +2,11 @@ package com.secure.notes.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -17,8 +18,8 @@ import com.secure.notes.models.Role;
 import com.secure.notes.models.User;
 import com.secure.notes.repositories.RoleRepository;
 import com.secure.notes.repositories.UserRepository;
-import com.secure.notes.security.filter.CustomLoggingFilter;
-import com.secure.notes.security.filter.RequestValidationFilter;
+import com.secure.notes.security.jwt.AuthEntryPointJwt;
+import com.secure.notes.security.jwt.AuthTokenFilter;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
@@ -35,25 +36,43 @@ public class SecurityConfig {
     // @Autowired
     // private CustomLoggingFilter customLoggingFilter;
 
+    @Autowired
+    private AuthEntryPointJwt unauthorizedHandler;
+
+    @Bean
+    public AuthTokenFilter authenticationJwtTokenFilter() {
+        return new AuthTokenFilter();
+    }
+
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration)
+            throws Exception {
+        return authenticationConfiguration.getAuthenticationManager();
+    }
+
     @Bean
     SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
-        http.csrf(csrf -> csrf
-                .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-                .ignoringRequestMatchers("/api/auth/public/**"));
         http.authorizeHttpRequests((requests) -> requests
                 // an alternative configuration to @PreAuthorize("hasRole('ROLE_ADMIN')") in
                 // AdminController // would be uncommenting the following line
-                // .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                .requestMatchers("/api/admin/**").hasRole("ADMIN")
                 // this line would allow all request to paths starting with /public/
                 // .requestMatchers("/public/**").permitAll()
                 .requestMatchers("/api/csrf-token").permitAll()
+                .requestMatchers("/api/auth/public/**").permitAll()
                 .anyRequest().authenticated());
         // http.csrf(AbstractHttpConfigurer::disable);
         // http.addFilterBefore(customLoggingFilter,
         // UsernamePasswordAuthenticationFilter.class);
         // http.addFilterAfter(new RequestValidationFilter(),
         // CustomLoggingFilter.class);
+        http.csrf(csrf -> csrf
+                .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+                .ignoringRequestMatchers("/api/auth/public/**"));
         http.httpBasic(withDefaults());
+        http.formLogin(withDefaults());
+        http.exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler));
+        http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 

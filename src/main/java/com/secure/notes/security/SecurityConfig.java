@@ -9,35 +9,44 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import com.secure.notes.models.AppRole;
 import com.secure.notes.models.Role;
 import com.secure.notes.models.User;
 import com.secure.notes.repositories.RoleRepository;
 import com.secure.notes.repositories.UserRepository;
+import com.secure.notes.security.filter.CustomLoggingFilter;
+import com.secure.notes.security.filter.RequestValidationFilter;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
 import java.time.LocalDate;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity(prePostEnabled = true, securedEnabled = true, jsr250Enabled = true)
 public class SecurityConfig {
+
+    @Autowired
+    private CustomLoggingFilter customLoggingFilter;
+
     @Bean
     SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests((requests) -> requests
                 // an alternative configuration to @PreAuthorize("hasRole('ROLE_ADMIN')") in
-                // AdminController
-                // would be uncommenting the following line
+                // AdminController                // would be uncommenting the following line
                 // .requestMatchers("/api/admin/**").hasRole("ADMIN")
                 // this line would allow all request to paths starting with /public/
                 // .requestMatchers("/public/**").permitAll()
                 .anyRequest()
                 .authenticated());
         http.csrf(AbstractHttpConfigurer::disable);
+        // http.addFilterBefore(customLoggingFilter, UsernamePasswordAuthenticationFilter.class);
+        // http.addFilterAfter(new RequestValidationFilter(), CustomLoggingFilter.class);
         http.httpBasic(withDefaults());
         return http.build();
     }

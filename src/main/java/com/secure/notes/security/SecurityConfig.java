@@ -10,6 +10,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 
 import com.secure.notes.models.AppRole;
 import com.secure.notes.models.Role;
@@ -36,15 +37,18 @@ public class SecurityConfig {
 
     @Bean
     SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
+        http.csrf(csrf -> csrf
+                .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+                .ignoringRequestMatchers("/api/auth/public/**"));
         http.authorizeHttpRequests((requests) -> requests
                 // an alternative configuration to @PreAuthorize("hasRole('ROLE_ADMIN')") in
                 // AdminController // would be uncommenting the following line
                 // .requestMatchers("/api/admin/**").hasRole("ADMIN")
                 // this line would allow all request to paths starting with /public/
                 // .requestMatchers("/public/**").permitAll()
-                .anyRequest()
-                .authenticated());
-        http.csrf(AbstractHttpConfigurer::disable);
+                .requestMatchers("/api/csrf-token").permitAll()
+                .anyRequest().authenticated());
+        // http.csrf(AbstractHttpConfigurer::disable);
         // http.addFilterBefore(customLoggingFilter,
         // UsernamePasswordAuthenticationFilter.class);
         // http.addFilterAfter(new RequestValidationFilter(),

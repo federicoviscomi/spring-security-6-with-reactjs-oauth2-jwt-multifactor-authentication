@@ -6,6 +6,8 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
 import com.secure.notes.models.AppRole;
@@ -22,30 +24,34 @@ import org.springframework.boot.CommandLineRunner;
 
 @Configuration
 @EnableWebSecurity
-@EnableMethodSecurity(
-    prePostEnabled = true,
-    securedEnabled =  true,
-    jsr250Enabled = true
-)
+@EnableMethodSecurity(prePostEnabled = true, securedEnabled = true, jsr250Enabled = true)
 public class SecurityConfig {
     @Bean
     SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests((requests) -> requests
-          // an alternative configuration to @PreAuthorize("hasRole('ROLE_ADMIN')") in AdminController
-          // would be uncommenting the following line
-          // .requestMatchers("/api/admin/**").hasRole("ADMIN")
-          // this line would allow all request to paths starting with /public/ .requestMatchers("/public/**").permitAll()
-          .anyRequest()
-          .authenticated()
-        );
+                // an alternative configuration to @PreAuthorize("hasRole('ROLE_ADMIN')") in
+                // AdminController
+                // would be uncommenting the following line
+                // .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                // this line would allow all request to paths starting with /public/
+                // .requestMatchers("/public/**").permitAll()
+                .anyRequest()
+                .authenticated());
         http.csrf(AbstractHttpConfigurer::disable);
         http.httpBasic(withDefaults());
         return http.build();
     }
 
     @Bean
-    public CommandLineRunner initData(RoleRepository roleRepository, UserRepository userRepository) {
-        // TODO do this in migrations and also make sure that the schema is in line with the entity
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public CommandLineRunner initData(RoleRepository roleRepository, UserRepository userRepository,
+            PasswordEncoder passwordEncoder) {
+        // TODO do this in migrations and also make sure that the schema is in line with
+        // the entity
         return args -> {
             Role userRole = roleRepository.findByRoleName(AppRole.ROLE_USER)
                     .orElseThrow();
@@ -54,7 +60,8 @@ public class SecurityConfig {
                     .orElseThrow();
 
             if (!userRepository.existsByUserName("user1")) {
-                User user1 = new User("user1", "user1@example.com", "{noop}password1");
+                User user1 = new User("user1", "user1@example.com",
+                        passwordEncoder.encode("password1"));
                 user1.setAccountNonLocked(false);
                 user1.setAccountNonExpired(true);
                 user1.setCredentialsNonExpired(true);
@@ -67,7 +74,8 @@ public class SecurityConfig {
                 userRepository.save(user1);
             }
             if (!userRepository.existsByUserName("admin")) {
-                User admin = new User("admin", "admin@example.com", "{noop}adminPass");
+                User admin = new User("admin", "admin@example.com",
+                        passwordEncoder.encode("adminPass"));
                 admin.setAccountNonLocked(true);
                 admin.setAccountNonExpired(true);
                 admin.setCredentialsNonExpired(true);

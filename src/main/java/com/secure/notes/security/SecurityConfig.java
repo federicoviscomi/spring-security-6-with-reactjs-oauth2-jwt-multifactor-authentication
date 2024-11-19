@@ -31,22 +31,24 @@ import org.springframework.boot.CommandLineRunner;
 @EnableMethodSecurity(prePostEnabled = true, securedEnabled = true, jsr250Enabled = true)
 public class SecurityConfig {
 
-    @Autowired
-    private CustomLoggingFilter customLoggingFilter;
+    // @Autowired
+    // private CustomLoggingFilter customLoggingFilter;
 
     @Bean
     SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests((requests) -> requests
                 // an alternative configuration to @PreAuthorize("hasRole('ROLE_ADMIN')") in
-                // AdminController                // would be uncommenting the following line
+                // AdminController // would be uncommenting the following line
                 // .requestMatchers("/api/admin/**").hasRole("ADMIN")
                 // this line would allow all request to paths starting with /public/
                 // .requestMatchers("/public/**").permitAll()
                 .anyRequest()
                 .authenticated());
         http.csrf(AbstractHttpConfigurer::disable);
-        // http.addFilterBefore(customLoggingFilter, UsernamePasswordAuthenticationFilter.class);
-        // http.addFilterAfter(new RequestValidationFilter(), CustomLoggingFilter.class);
+        // http.addFilterBefore(customLoggingFilter,
+        // UsernamePasswordAuthenticationFilter.class);
+        // http.addFilterAfter(new RequestValidationFilter(),
+        // CustomLoggingFilter.class);
         http.httpBasic(withDefaults());
         return http.build();
     }

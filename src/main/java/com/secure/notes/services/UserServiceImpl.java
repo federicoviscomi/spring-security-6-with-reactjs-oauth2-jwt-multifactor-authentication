@@ -14,7 +14,7 @@ import java.util.List;
 
 @Service
 public class UserServiceImpl implements UserService {
-    
+
     @Autowired
     UserRepository userRepository;
 
@@ -31,16 +31,14 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
     }
 
-
     @Override
     public List<User> getAllUsers() {
         return userRepository.findAll();
     }
 
-
     @Override
     public UserDTO getUserById(Long id) {
-//        return userRepository.findById(id).orElseThrow();
+        // return userRepository.findById(id).orElseThrow();
         User user = userRepository.findById(id).orElseThrow();
         return convertToDto(user);
     }
@@ -61,9 +59,7 @@ public class UserServiceImpl implements UserService {
                 user.getSignUpMethod(),
                 user.getRole(),
                 user.getCreatedDate(),
-                user.getUpdatedDate()
-        );
+                user.getUpdatedDate());
     }
-
 
 }

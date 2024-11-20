@@ -30,7 +30,7 @@ public class UserDetailsImpl implements UserDetails {
     private Collection<? extends GrantedAuthority> authorities;
 
     public UserDetailsImpl(Long id, String username, String email, String password,
-                           boolean is2faEnabled, Collection<? extends GrantedAuthority> authorities) {
+            boolean is2faEnabled, Collection<? extends GrantedAuthority> authorities) {
         this.id = id;
         this.username = username;
         this.email = email;
@@ -51,7 +51,6 @@ public class UserDetailsImpl implements UserDetails {
                 List.of(authority) // Wrapping the single authority in a list
         );
     }
-
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

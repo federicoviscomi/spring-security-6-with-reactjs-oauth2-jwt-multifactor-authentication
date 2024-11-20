@@ -14,4 +14,3 @@ public class Note {
 
     private String ownerUsername;
 }
-

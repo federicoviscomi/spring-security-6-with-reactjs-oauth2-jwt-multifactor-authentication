@@ -25,8 +25,8 @@ public class AdminController {
     }
 
     @PutMapping("/update-role")
-    public ResponseEntity<String> updateUserRole(@RequestParam Long userId, 
-                                                 @RequestParam String roleName) {
+    public ResponseEntity<String> updateUserRole(@RequestParam Long userId,
+            @RequestParam String roleName) {
         userService.updateUserRole(userId, roleName);
         return ResponseEntity.ok("User role updated");
     }

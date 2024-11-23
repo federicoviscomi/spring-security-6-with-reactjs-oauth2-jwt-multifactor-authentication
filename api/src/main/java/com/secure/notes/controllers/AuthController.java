@@ -1,12 +1,16 @@
 package com.secure.notes.controllers;
 
-import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
-
+import com.secure.notes.models.AppRole;
+import com.secure.notes.models.Role;
+import com.secure.notes.models.User;
+import com.secure.notes.repositories.RoleRepository;
+import com.secure.notes.repositories.UserRepository;
+import com.secure.notes.security.jwt.JwtUtils;
+import com.secure.notes.security.request.SignupRequest;
+import com.secure.notes.security.response.MessageResponse;
+import com.secure.notes.security.response.UserInfoResponse;
+import com.secure.notes.services.UserService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,24 +22,14 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import com.secure.notes.models.AppRole;
-import com.secure.notes.models.Role;
-import com.secure.notes.models.User;
-import com.secure.notes.repositories.RoleRepository;
-import com.secure.notes.repositories.UserRepository;
-import com.secure.notes.security.jwt.JwtUtils;
-import com.secure.notes.security.request.SignupRequest;
-import com.secure.notes.security.response.MessageResponse;
-import com.secure.notes.security.response.UserInfoResponse;
-import com.secure.notes.services.UserService;
-
-import jakarta.validation.Valid;
+import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/auth")

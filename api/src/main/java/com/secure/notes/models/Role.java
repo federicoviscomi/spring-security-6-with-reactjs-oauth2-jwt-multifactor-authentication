@@ -27,7 +27,7 @@ public class Role {
     @Column(length = 20, name = "role_name")
     private AppRole roleName;
 
-    @OneToMany(mappedBy = "role", fetch = FetchType.LAZY, cascade = { CascadeType.MERGE })
+    @OneToMany(mappedBy = "role", fetch = FetchType.LAZY, cascade = {CascadeType.MERGE})
     @JsonBackReference
     @ToString.Exclude
     private Set<User> users = new HashSet<>();

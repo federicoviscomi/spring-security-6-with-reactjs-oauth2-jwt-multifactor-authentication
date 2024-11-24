@@ -17,12 +17,12 @@ public class AuditLogController {
     AuditLogService auditLogService;
 
     @GetMapping
-    public List<AuditLog> getAuditLogs(){
+    public List<AuditLog> getAuditLogs() {
         return auditLogService.getAllAuditLogs();
     }
 
     @GetMapping("/note/{id}")
-    public List<AuditLog> getNoteAuditLogs(@PathVariable Long id){
+    public List<AuditLog> getNoteAuditLogs(@PathVariable Long id) {
         return auditLogService.getAuditLogsForNoteId(id);
     }
 

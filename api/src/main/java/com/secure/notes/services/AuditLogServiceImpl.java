@@ -14,9 +14,9 @@ public class AuditLogServiceImpl implements AuditLogService {
 
     @Autowired
     AuditLogRepository auditLogRepository;
-    
+
     @Override
-    public void logNoteCreation(String username, Note note){
+    public void logNoteCreation(String username, Note note) {
         AuditLog log = new AuditLog();
         log.setAction("CREATE");
         log.setUsername(username);
@@ -27,7 +27,7 @@ public class AuditLogServiceImpl implements AuditLogService {
     }
 
     @Override
-    public void logNoteUpdate(String username, Note note){
+    public void logNoteUpdate(String username, Note note) {
         AuditLog log = new AuditLog();
         log.setAction("UPDATE");
         log.setUsername(username);
@@ -38,7 +38,7 @@ public class AuditLogServiceImpl implements AuditLogService {
     }
 
     @Override
-    public void logNoteDeletion(String username, Note note){
+    public void logNoteDeletion(String username, Note note) {
         AuditLog log = new AuditLog();
         log.setAction("DELETE");
         log.setUsername(username);
